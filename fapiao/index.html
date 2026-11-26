@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粒子发票助手 - 拒绝重复劳动，一键批量打印</title>
+    <meta name="description" content="专为财务人员设计的发票批量打印工具，解决一张张打开设置打印参数的繁琐痛点。纯本地运行，安全高效。">
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 配置 Tailwind 的暗黑模式 -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        darkbg: '#111827',
+                        darkcard: '#1F2937'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <script>
+        // 暗黑模式切换逻辑
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+
+        // 初始化判断
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+
+<body
+    class="bg-gray-50 text-gray-800 font-sans antialiased transition-colors duration-300 dark:bg-darkbg dark:text-gray-100">
+
+    <!-- 顶部导航 -->
+    <nav
+        class="bg-white/90 backdrop-blur-md shadow-sm fixed w-full z-50 transition-colors duration-300 dark:bg-darkcard/90 dark:border-b dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <!-- Logo: 原子/粒子图标 -->
+                    <div class="bg-primary text-white p-1.5 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900 dark:text-white">粒子发票助手</span>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- 暗黑模式开关 -->
+                    <button onclick="toggleDarkMode()"
+                        class="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition">
+                        <!-- Sun Icon -->
+                        <svg class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <!-- Moon Icon -->
+                        <svg class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <!-- <a href="#download"
+                        class="bg-primary hover:bg-indigo-700 text-white px-5 py-2 rounded-full text-sm font-medium transition duration-300 shadow-lg hover:shadow-indigo-500/30">
+                        下载 Windows 版
+                    </a> -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <header
+        class="pt-32 pb-16 bg-gradient-to-b from-white to-gray-50 dark:from-darkbg dark:to-darkcard transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center fade-in-up">
+            <!-- <span
+                class="inline-block py-1 px-3 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold mb-4 dark:bg-indigo-900 dark:text-indigo-200">
+                v1.0.1 正式发布
+            </span> -->
+            <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+                发票太多打不完？
+                <span class="block text-primary mt-2">一键批量打印，拒绝重复劳动</span>
+            </h1>
+            <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-400">
+                无需再一张张打开 PDF，无需每次都设置 A4/A5 和横竖方向。
+                <br>拖入文件夹，剩下的交给“粒子”。
+            </p>
+
+            <div class="mt-6 flex justify-center" id="download">
+                <a href="/dl/liziFapiao-v1.0.1.zip"
+                    class="flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-xl text-white bg-primary hover:bg-indigo-700 shadow-xl hover:shadow-2xl transition transform hover:-translate-y-1 w-full sm:w-auto">
+                    <!-- Windows Icon -->
+                    <svg class="w-6 h-6 mr-3" viewBox="0 0 88 88" fill="currentColor">
+                        <path
+                            d="M0,12.402l35.687-4.86v34.023H0V12.402z M35.687,48.078H0v35.109l35.687-4.932V48.078z M42.141,6.594  L88,0v41.565H42.141V6.594z M88,48.078H42.141v43.25L88,88V48.078z" />
+                    </svg>
+                    免费下载 Windows 版 v1.0.1
+                </a>
+            </div>
+            <p class="mt-4 text-sm text-gray-400">适用于 Windows 10 / 11 (x64)</p>
+
+            <!-- 永久免费声明 -->
+            <div class="mt-8 flex items-center justify-center gap-2 text-primary font-semibold">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span class="text-lg tracking-wide">批量打印功能，承诺永久免费</span>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- 痛点对比：为什么你需要它 -->
+    <section
+        class="py-20 bg-white dark:bg-darkbg transition-colors duration-300 border-t border-gray-100 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white">这是否是你工作的日常？</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 痛苦的过去 -->
+                <div class="bg-red-50 dark:bg-red-900/20 p-8 rounded-2xl border border-red-100 dark:border-red-900/50">
+                    <h3 class="text-xl font-bold text-red-600 dark:text-red-400 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        传统打印方式
+                    </h3>
+                    <ul class="space-y-4 text-gray-600 dark:text-gray-300">
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">✕</span>
+                            双击打开 PDF，等待软件启动...
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">✕</span>
+                            点击“打印”，弹出对话框...
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">✕</span>
+                            手动选打印机，检查纸张是 A4 还是 A5...
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">✕</span>
+                            如果是 A5，还得小心不要打歪了浪费纸...
+                        </li>
+                        <li class="font-bold mt-4 text-red-500">如果有 50 张发票，这套动作要重复 50 次！崩溃！</li>
+                    </ul>
+                </div>
+
+                <!-- 高效的现在 -->
+                <div
+                    class="bg-green-50 dark:bg-green-900/20 p-8 rounded-2xl border border-green-100 dark:border-green-900/50 relative overflow-hidden">
+                    <div
+                        class="absolute top-0 right-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                        RECOMMENDED</div>
+                    <h3 class="text-xl font-bold text-green-600 dark:text-green-400 mb-6 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        使用粒子发票助手
+                    </h3>
+                    <ul class="space-y-4 text-gray-600 dark:text-gray-300">
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2">✓</span>
+                            直接把包含 50 张发票的文件夹拖进来。
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2">✓</span>
+                            软件自动识别大发票和小发票。
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2">✓</span>
+                            <span class="font-semibold text-gray-800 dark:text-gray-100">自动拼版：</span>两张 A5 自动合拼到一张 A4 纸。
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-green-500 mr-2">✓</span>
+                            点击“开始打印”，然后去喝杯咖啡，全部搞定。
+                        </li>
+                        <li class="font-bold mt-4 text-green-600">节省 90% 的时间，节省 50% 的纸张。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心功能与限制说明 -->
+    <section class="py-20 bg-gray-50 dark:bg-darkcard transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <!-- Feature 1 -->
+                <div
+                    class="bg-white dark:bg-darkbg p-6 rounded-xl shadow-sm dark:shadow-none border border-gray-100 dark:border-gray-700">
+                    <div class="text-primary mb-4">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">智能 A4 拼版</h3>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        无需手动排版。软件自动检测 A5 尺寸发票，将两张 A5 上下拼接，利用 A4 纸打印，既环保又方便归档。
+                    </p>
+                </div>
+                <!-- Feature 2 -->
+                <div
+                    class="bg-white dark:bg-darkbg p-6 rounded-xl shadow-sm dark:shadow-none border border-gray-100 dark:border-gray-700">
+                    <div class="text-primary mb-4">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">数据隐私保护</h3>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        这是一个纯本地工具。所有文件解析、处理都在您的电脑内存中完成。不上传云端，不保存任何发票底稿。
+                    </p>
+                </div>
+                <!-- Feature 3 -->
+                <div
+                    class="bg-white dark:bg-darkbg p-6 rounded-xl shadow-sm dark:shadow-none border border-gray-100 dark:border-gray-700">
+                    <div class="text-primary mb-4">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">极简静默打印</h3>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        告别 Windows 弹窗。配置好默认打印机后，点击一次，后台静默处理所有任务，不干扰您的其他工作。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 使用限制说明 (Transparency) -->
+            <div
+                class="mt-16 bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-900/50 rounded-lg p-6 flex flex-col md:flex-row items-start gap-4">
+                <div class="flex-shrink-0 text-yellow-600 dark:text-yellow-500">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-gray-200">当前版本使用须知</h4>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        为了给您提供最稳定的体验，在使用前请了解以下情况：
+                    </p>
+                    <ul class="mt-2 text-sm text-gray-600 dark:text-gray-400 list-disc list-inside">
+                        <li>目前仅支持 <strong>PDF 格式</strong> 的电子发票。OFD 格式（税务局新格式）暂不支持，建议先转为 PDF 后使用。</li>
+                        <li>目前仅支持 <strong>Windows</strong>，不支持 macOS 或 Linux 系统。</li>
+                        <li>建议使用标准的 A4 打印机，并确保打印机驱动已正确安装。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系方式 (微信二维码) -->
+    <section
+        class="py-16 bg-white dark:bg-darkbg border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">联系我们 / 反馈建议</h2>
+            <div class="flex flex-col items-center">
+                <div class="bg-gray-100 p-4 rounded-xl shadow-inner dark:bg-gray-800">
+                    <!-- 请将 src 替换为你真实的微信二维码图片路径 -->
+                    <!-- 如果图片加载失败，会显示 alt 文字 -->
+                    <img src="./../images/lizisky.png" alt="微信二维码：请添加好友联系"
+                        class="w-48 h-48 object-cover rounded-lg bg-white">
+                </div>
+                <p class="mt-6 text-gray-500 dark:text-gray-400 max-w-md">
+                    如果您在使用中遇到问题，或者有更好的功能建议，<br>欢迎扫描上方微信二维码添加微信直接沟通。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer
+        class="bg-gray-50 dark:bg-darkcard text-gray-500 dark:text-gray-400 py-10 transition-colors duration-300 border-t border-gray-200 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2025 粒子发票助手 (Lizi Invoice Helper). All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
